@@ -1,41 +1,33 @@
+import os
+import readline
+
 import pandas as pd
 
+readline.parse_and_bind('tab: complete')
+readline.parse_and_bind('set editing-mode vi')
+
+
 def main():
-    artcarbonara = pd.read_csv('Recipes/Ärtcarbonara_4p.csv')
-    gronkalspasta = pd.read_csv('Recipes/Grönkålspasta_4p.csv')
-    citronigkgryta = pd.read_csv(
-        'Recipes/Citronig_kikärtsgryta_4p.csv'
-    )  # ggr 6
-    artsoppa = pd.read_csv('Recipes/Ärtsoppa_8p.csv')
-    jordnotsgryta = pd.read_csv(
-        'Recipes/Jordnötsgryta_med_oumph_4p.csv'
-    )  # ggr 2
-    gottbullar = pd.read_csv(
-        'Recipes/Göttbullar_med_potatismos_och_brunsås_och_lingon_4p.csv'
-    )
-    citron_och_mgryta = pd.read_csv(
-        'Recipes/Citron_och_morotsgryta_med_rosmarin_4p.csv'
-    )  # ggr 6
-    kantarellpasta = pd.read_csv('Recipes/Kantarellpasta_4p.csv')
-    lasagne_i_langpanna = pd.read_csv(
-        'Recipes/Lasagne_i_långpanna_8p.csv'
-    )  # ggr 3
-    frames = [
-        artcarbonara,
-        gronkalspasta,
-        citronigkgryta, citronigkgryta, citronigkgryta,
-        citronigkgryta, citronigkgryta, citronigkgryta,
-        artsoppa,
-        jordnotsgryta, jordnotsgryta,
-        gottbullar,
-        citron_och_mgryta, citron_och_mgryta, citron_och_mgryta,
-        citron_och_mgryta, citron_och_mgryta, citron_och_mgryta,
-        kantarellpasta,
-        lasagne_i_langpanna, lasagne_i_langpanna, lasagne_i_langpanna,
-    ]
-    groceryList = pd.concat(frames)
+    items = pd.DataFrame()
+    while True:
+        filename = input('Enter file for recipe or stop to quit:')
+        try:
+            if filename == 'stop':
+                break
+            elif os.path.isfile(filename):
+                rec = pd.read_csv(filename)
+                multiple = float(input('Multiple?'))
+                rec['Antal'] = rec['Antal'].apply(lambda x: x*multiple)
+                items = pd.concat([items, rec])
+                print(os.path.basename(filename), 'added.')
+            else:
+                print(f'{filename} is not a filename! Try again.')
+        except Exception as e:
+            print(e)
+            print('Try again.')
     print('==================================================')
-    print(groceryList.groupby(['Artikel', 'Enhet']).sum())
+    print(items.groupby(['Artikel', 'Enhet']).sum())
+    df.to_csv(r'tmp.txt', sep=' ', mode='a')
 
 if __name__=='__main__':
     main()
